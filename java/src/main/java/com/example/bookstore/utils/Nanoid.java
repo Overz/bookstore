@@ -3,7 +3,9 @@ package com.example.bookstore.utils;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import java.util.Random;
 
-public class Nanoid {
+public abstract class Nanoid {
+
+	private Nanoid(){}
 
 	/**
 	 * Gera um ID Unico

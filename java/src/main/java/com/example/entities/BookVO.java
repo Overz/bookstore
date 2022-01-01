@@ -1,4 +1,4 @@
-package com.example.bookstore.models.vo;
+package com.example.entities;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @Entity(name = "book")
-@Table(name = "book", schema = "public", catalog = "bookstore")
+@Table(name = "book")
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookVO implements Serializable {
@@ -43,8 +43,4 @@ public class BookVO implements Serializable {
 	@SerializedName(value = "created_at", alternate = { "dtCreated" })
 	@Column(name = "dtcreated", nullable = false)
 	private Long dtCreated;
-
-	public String toDTO() {
-		return "";
-	}
 }

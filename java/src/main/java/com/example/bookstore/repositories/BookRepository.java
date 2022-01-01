@@ -1,6 +1,6 @@
 package com.example.bookstore.repositories;
 
-import com.example.bookstore.models.vo.BookVO;
+import com.example.entities.BookVO;
 import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

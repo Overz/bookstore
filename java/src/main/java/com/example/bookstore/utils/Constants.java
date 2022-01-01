@@ -9,5 +9,6 @@ public class Constants {
 	public static final Gson GSON = new GsonBuilder()
 		.excludeFieldsWithoutExposeAnnotation()
 		.setDateFormat("dd/MM/yyyy - HH:mm:ss - a")
+		.setPrettyPrinting()
 		.create();
 }

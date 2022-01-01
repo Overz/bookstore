@@ -5,11 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.stream.Collectors;
+
+import static com.example.bookstore.utils.Constants.GSON;
 
 @Data
 @Builder
@@ -45,7 +51,7 @@ public class Pagination implements Pageable, Serializable {
 	}
 
 	@Override
-	public Pageable next() {
+	public Pagination next() {
 		return Pagination
 			.builder()
 			.page(getPage() + getPageSize())
@@ -104,27 +110,50 @@ public class Pagination implements Pageable, Serializable {
 		return this.page > pageSize;
 	}
 
-	public static Pagination buildPagination(int page, int pageSize, String sort, Object o) {
-		String[] content = sort.split(",");
-		Sort.Direction direction = Sort.Direction.fromString(content[1]);
+	public Pagination execute(JpaRepository repo) {
+		var data = getData();
 
+		Page<?> page;
+		if (data != null) {
+			page = repo.findAll(Example.of(data), this);
+		} else {
+			page = repo.findAll(this);
+		}
+
+		setTotalRecords(page.getTotalElements());
+		setData(page.stream().collect(Collectors.toList()));
+
+		return this;
+	}
+
+	public static Pagination buildPagination(int page, int pageSize, String sort, Object o) {
 		Pagination.PaginationBuilder builder = Pagination
 			.builder()
 			.page(page)
-			.pageSize(pageSize)
-			.data(o);
+			.data(o)
+			.sort(Sort.unsorted())
+			.pageSize(pageSize);
 
-		Field[] fields = o.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			SerializedName serial = field.getAnnotation(SerializedName.class);
-			if (serial != null) {
-				if (serial.value().equalsIgnoreCase(content[0])) {
-					builder.sort(Sort.by(direction, serial.alternate()[0]));
-					break;
+		if (sort != null && sort.length() > 0) {
+			String[] content = sort.split(",");
+			Sort.Direction direction = Sort.Direction.fromString(content[1]);
+
+			Field[] fields = o.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				SerializedName serial = field.getAnnotation(SerializedName.class);
+				if (serial != null) {
+					if (serial.value().equalsIgnoreCase(content[0])) {
+						builder.sort(Sort.by(direction, serial.alternate()[0]));
+						break;
+					}
 				}
 			}
 		}
 
 		return builder.build();
+	}
+
+	public Object toDTO() {
+		return GSON.toJson(getData());
 	}
 }
