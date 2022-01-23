@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  # application:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: .
+  #   restart: always
+  #   hostname: app-srv
+  #   depends_on:
+  #     - mongodb
+  #   environment:
+  #     DB_URL: 'mongodb://admin:admin@mongodb-srv:27017/bookstore?authSource=admin&readPreference=primary&directConnection=true&ssl=false'
+  #     PORT: '3000'
+  #     APP_NAME: 'Bookstore'
+  #   ports:
+  #     - '3000:3000'
+  #   expose:
+  #     - 3000
+  #   networks:
+  #     app:
+
+  # mongodb://admin:admin@localhost:27017/bookstore
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb-srv
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: bookstore
+    ports:
+      - '27017:27017'
+    expose:
+      - 27017
+    volumes:
+      - 'mongodb:/data/db'
+    networks:
+      app:
+
+  adminer:
+    build:
+      dockerfile: Dockerfile.adminer
+      context: .
+    restart: always
+    hostname: adminer-srv
+    environment:
+      ADMINER_DEFAULT_SERVER: mongodb-srv
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    networks:
+      app:
+
+networks:
+  app:
+    name: app
+
+volumes:
+  mongodb:
+    name: mongodb

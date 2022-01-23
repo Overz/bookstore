@@ -1,0 +1,11 @@
+build
+coverage
+node_modules
+.*
+!.npmrc
+!.yarnrc
+tsconfig.json
+Dockerfile*
+*.yaml
+*.yml
+restart
