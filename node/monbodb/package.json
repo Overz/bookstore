@@ -17,7 +17,7 @@
     "express": "4.17.2",
     "express-validator": "6.14.0",
     "mongodb": "4.3.0",
-    "mongoose": "6.1.5",
+    "mongoose": "6.4.6",
     "nanoid": "3.1.32",
     "tsconfig-paths": "3.12.0",
     "validator": "13.7.0"
