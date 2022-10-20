@@ -1,4 +1,4 @@
-package com.example.entities;
+package com.example.bookstore.entities;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@Entity(name = "book")
-@Table(name = "book")
+@Entity(name = BookVO.BOOK_TABLE)
+@Table(name = BookVO.BOOK_TABLE)
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookVO implements Serializable {
 	public static final int BOOK_SIZE = 10;
+	public static final String BOOK_TABLE = "book";
 
 	@Id
 	@Expose

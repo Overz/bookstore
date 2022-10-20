@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import java.io.File;
 
 public class Constants {
+	private Constants(){}
+
 	public static final String WORKDIR = new File("").getAbsolutePath();
 	public static final Gson GSON = new GsonBuilder()
 		.excludeFieldsWithoutExposeAnnotation()

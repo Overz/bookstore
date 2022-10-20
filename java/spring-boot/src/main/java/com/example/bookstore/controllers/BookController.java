@@ -1,6 +1,6 @@
 package com.example.bookstore.controllers;
 
-import com.example.entities.BookVO;
+import com.example.bookstore.entities.BookVO;
 import com.example.bookstore.service.interfaces.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

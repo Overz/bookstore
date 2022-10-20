@@ -7,8 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BookstoreApplication {
 
 	public static void main(String[] args) {
-//		Runtime.getRuntime().addShutdownHook(new Thread(BookstoreApplication::finish));
-
 		SpringApplication.run(BookstoreApplication.class, args);
 	}
 

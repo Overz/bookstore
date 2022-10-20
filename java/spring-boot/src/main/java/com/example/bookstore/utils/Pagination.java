@@ -13,6 +13,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.bookstore.utils.Constants.GSON;
@@ -135,17 +138,28 @@ public class Pagination implements Pageable, Serializable {
 			.pageSize(pageSize);
 
 		if (sort != null && sort.length() > 0) {
+			// name,asc
 			String[] content = sort.split(",");
-			Sort.Direction direction = Sort.Direction.fromString(content[1]);
-
+			Sort.Direction direction;
 			Field[] fields = o.getClass().getDeclaredFields();
+			if (content.length <= 1) {
+				Optional<Field> field = Arrays.stream(fields).filter(f -> {
+					SerializedName serial = f.getAnnotation(SerializedName.class);
+					return Objects.equals(serial.value(), "id");
+				}).findFirst();
+				if (field.isPresent()) {
+					direction = Sort.Direction.fromString(content[0]);
+					builder.sort(Sort.by(direction, field.get().getName()));
+				}
+				return builder.build();
+			}
+
+			direction = Sort.Direction.fromString(content[1]);
 			for (Field field : fields) {
 				SerializedName serial = field.getAnnotation(SerializedName.class);
-				if (serial != null) {
-					if (serial.value().equalsIgnoreCase(content[0])) {
-						builder.sort(Sort.by(direction, serial.alternate()[0]));
-						break;
-					}
+				if (serial != null && serial.value().equalsIgnoreCase(content[0])) {
+					builder.sort(Sort.by(direction, serial.alternate()[0]));
+					break;
 				}
 			}
 		}

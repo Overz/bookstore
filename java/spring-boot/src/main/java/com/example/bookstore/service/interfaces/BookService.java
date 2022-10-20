@@ -1,6 +1,6 @@
 package com.example.bookstore.service.interfaces;
 
-import com.example.entities.BookVO;
+import com.example.bookstore.entities.BookVO;
 
 public interface BookService {
 	Object listAll(int page, int pageSize, String sort, BookVO vo);
