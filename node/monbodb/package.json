@@ -19,7 +19,7 @@
     "mongodb": "4.3.0",
     "mongoose": "6.1.5",
     "nanoid": "3.1.32",
-    "tsconfig-paths": "3.12.0",
+    "tsconfig-paths": "4.1.2",
     "validator": "13.7.0"
   },
   "devDependencies": {
