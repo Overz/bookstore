@@ -1,0 +1,42 @@
+def BASE_RESOURCES = "src/main/resources"
+def BASE_TEMPLATES = "${BASE_RESOURCES}/templates"
+
+Map<String, String> TOKENS = [
+	'{{APP_NAME}}'       : rootProject.name,
+	'{{APP_VERSION}}'    : version,
+	'{{APP_DESCRIPTION}}': description
+]
+
+static String replaceTokens(String line, Map<String, String> tokens) {
+	for (String item : line.tokenize()) {
+		if (tokens[item]) {
+			line = line.replace(item, tokens[item])
+		}
+	}
+
+	return line
+}
+
+processResources {
+	doLast {
+		copy {
+			def file = "swagger.v1.template.yaml"
+			from("${BASE_TEMPLATES}/swagger") {
+				include "*.yaml"
+			}
+			into("$buildDir/resources/main/static/swagger")
+			rename file, 'v1.yaml'
+			filter { String line -> replaceTokens(line, TOKENS) }
+		}
+
+		copy {
+			def file = "template.Dockerfile"
+			from("${BASE_TEMPLATES}/docker") {
+				include file
+			}
+			into("$projectDir.absolutePath")
+			rename file, "Dockerfile"
+			filter { String line -> replaceTokens(line, TOKENS) }
+		}
+	}
+}

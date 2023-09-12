@@ -1,7 +1,0 @@
-.vscode
-tmp
-bindata.go
-*.out
-/bookstore
-.tools_ok
-.idea

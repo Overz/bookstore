@@ -1,0 +1,63 @@
+# DOCS: https://swagger.io/docs/specification/basic-structure/
+# EDITOR: https://editor.swagger.io/
+
+openapi: 3.0.3
+
+info:
+  title: Documentação do módulo {{APP_NAME}}
+  description: |
+    {{APP_DESCRIPTION}}
+
+  version: {{APP_VERSION}}
+
+servers:
+  - url: 'http://localhost:3000/auth'
+    description: 'localhost'
+
+paths:
+  /system/liveness:
+    get:
+      tags:
+        - HealthCheck
+      summary: Check if services is running
+      operationId: Get_Liveness
+      responses:
+        200:
+          description: |
+            Json with a feel informations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Liveness"
+              examples:
+                Liveness:
+                  $ref: "#/components/examples/Liveness"
+
+components:
+  schemas:
+    Liveness:
+      type: object
+      description: Liveness Schema
+      properties:
+        name:
+          type: string
+          description: "application name"
+        version:
+          type: string
+          description: "applicaiton version"
+        profiles:
+          type: array
+          description: "application profiles mode"
+        date:
+          type: string
+          description: "actual date"
+
+  examples:
+    Liveness:
+      value:
+        {
+          name: "my-system",
+          version: "1.2.3",
+          description: "blablabla",
+          profiles: [ "prod" ]
+        }

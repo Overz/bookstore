@@ -1,5 +1,0 @@
-#!/bin/sh
-
-docker-compose down
-docker volume rm mongodb
-docker-compose up -d

@@ -1,0 +1,100 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.0'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+static boolean hasValue(String value) {
+	return value != null && !value.isEmpty()
+}
+
+tasks.register("configureDevelopmentEnvironment") {
+	String SPRING_PROFILES_ACTIVE = System.getenv("SPRING_PROFILES_ACTIVE")
+
+	if (hasValue(SPRING_PROFILES_ACTIVE)) {
+		String[] profiles = SPRING_PROFILES_ACTIVE.split(",")
+		if (!profiles.contains("dev")) {
+			println("Production profile is included, skipping .env file")
+			return
+		}
+	}
+
+	println("Loading environments from .env")
+	def file = file(projectDir.absolutePath + '/.env')
+	if (file.exists()) {
+		file.readLines().each { line ->
+			if (hasValue(line) && !line.startsWith("#")) {
+				line = line.trim()
+				def (key, value) = line.tokenize("=")
+				println("ADDING: " + key + "=" + value)
+				System.setProperty(key.trim(), value.trim())
+			}
+		}
+	}
+
+	println("\n")
+	def tmpDir = "${projectDir.absolutePath}/tmp"
+
+	def LOG_DIR = System.getProperty("LOG_DIR")
+	if (!hasValue(LOG_DIR)) {
+		def dir = "${tmpDir}/${rootProject.name}/${version}/dev"
+		println("Setting LOG_DIR=" + dir)
+		System.setProperty("LOG_DIR", dir)
+	}
+
+	def LOG_FILE_NAME = System.getProperty("LOG_FILE_NAME")
+	if (!hasValue(LOG_FILE_NAME)) {
+		def name = "" + System.currentTimeMillis()
+		println("Setting LOG_FILE_NAME=" + name)
+		System.setProperty("LOG_FILE_NAME", name)
+	}
+
+	println("\nFinal Properties:")
+	System.getProperties().entrySet().each {
+		String key = it.getKey()
+		if (Character.isUpperCase(key.charAt(0))) {
+			println("${key}=${it.getValue()}")
+		}
+	}
+}
+
+bootRun {
+	dependsOn(configureDevelopmentEnvironment)
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-graphql'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.apache.kafka:kafka-streams'
+	implementation 'org.flywaydb:flyway-core'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework:spring-webflux'
+	testImplementation 'org.springframework.graphql:spring-graphql-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

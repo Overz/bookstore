@@ -1,0 +1,31 @@
+---
+debug: true
+
+server:
+  shutdown: immediate
+  error:
+    include-binding-errors: always
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+
+spring:
+  application:
+    name: "bookstore-authentication-service"
+  info:
+    build:
+      version: "DEVELOPMENT"
+      description: "DEVELOPMENT"
+  jpa:
+    show-sql: true
+  devtools:
+    livereload:
+      enabled: true
+  flyway:
+    locations: "classpath:migrations/prod,classpath:migrations/dev"
+
+logging:
+  logback:
+    rollingpolicy:
+      clean-history-on-start: true
+---

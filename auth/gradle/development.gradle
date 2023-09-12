@@ -1,0 +1,84 @@
+application {
+	def envs = configureDevelopmentEnvironment()
+	printEnvironmentsVariables(envs)
+
+	mainClassName = project.property("app.manifest.mainClass") as String
+
+	bootRun {
+		systemProperties(envs)
+		environment(envs)
+	}
+
+	bootTestRun {
+		systemProperties(envs)
+		environment(envs)
+	}
+}
+
+def printEnvironmentsVariables(Map data) {
+	println("DEVELOPMENT ENVIRONMENTS:")
+	data.entrySet().each {
+		println("${it.getKey()}=${it.getValue()}")
+	}
+}
+
+static boolean hasValue(String value) {
+	return value != null && !value.isEmpty()
+}
+
+boolean isProduction() {
+	String SPRING_PROFILES_ACTIVE = System.getenv("SPRING_PROFILES_ACTIVE")
+	if (!hasValue(SPRING_PROFILES_ACTIVE)) {
+		println("SPRING PROFILES ENVIRONMENT DIDNT SET")
+		return false
+	}
+
+	String[] profiles = SPRING_PROFILES_ACTIVE.split(",")
+	return profiles.contains(project.property("dev.profile"))
+}
+
+Map<String, String> configureDevelopmentEnvironment() {
+	println("Setting up environments and properties...")
+
+	Map<String, String> data = new TreeMap<>()
+	data.put("APP_NAME", name)
+	data.put("APP_VERSION", version as String)
+	data.put("APP_DESCRIPTION", description)
+
+	if (isProduction()) {
+		println("Skipping, production is active")
+		return data
+	}
+
+	def files = ['.env', '.env.local']
+	files.each {
+		println("Loading environments from '${it}'")
+		def file = file(projectDir.absolutePath + "/${it}")
+		if (file.exists()) {
+			file.readLines().each { line ->
+				if (hasValue(line) && !line.startsWith("#")) {
+					line = line.trim()
+					def (key, value) = line.tokenize("=")
+					data.put(key, value)
+				}
+			}
+		}
+	}
+
+	// enable terminal print color
+	data.put("spring.output.ansi.console-available", true)
+
+	if (!data.containsKey("LOG_DIR")) {
+		def dir = "${projectDir.absolutePath}/tmp/${rootProject.name}/${version}/dev"
+		println("Setting LOG_DIR=" + dir)
+		data.put("LOG_DIR", dir)
+	}
+
+	if (!data.containsKey("LOG_FILE_NAME")) {
+		def name = "" + System.currentTimeMillis()
+		println("Setting LOG_FILE_NAME=${name}")
+		data.put("LOG_FILE_NAME", name)
+	}
+
+	return data
+}

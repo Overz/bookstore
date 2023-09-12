@@ -1,0 +1,5 @@
+#!/bin/sh
+
+docker-compose down
+docker volume rm bookstore-postgres --force
+docker-compose up

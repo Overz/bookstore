@@ -1,0 +1,60 @@
+# Definir quebras de linha para serem LF em todos os arquivos
+* text eol=lf
+# Definir fins de linha CRLF (Windows) para arquivos Batch
+*.bat eol=crlf
+
+# Definir codificação para arquivos de texto
+* text=auto charset=utf-8
+
+# Ignorar espaços em branco nas alterações
+* diff=ws
+
+# Ignorar espaços em branco no início e no final das linhas
+* trailing-space
+
+# Definir tamanho máximo de arquivos de código-fonte
+*.java   max-line-length=100
+*.xml    max-line-length=120
+*.json   max-line-length=120
+*.yml    max-line-length=120
+*.yaml   max-line-length=120
+
+# Definir atributos personalizados para arquivos específicos
+*.css    indent=spaces=2
+*.java   indent=spaces=4
+*.html   indent=spaces=2
+*.js     indent=spaces=2
+*.json   indent=spaces=2
+*.xml    indent=spaces=2
+*.yml    indent=spaces=2
+*.yaml   indent=spaces=2
+
+# Ignorar arquivos binários
+*.class binary
+*.jar binary
+*.war binary
+*.ear binary
+*.gif binary
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.zip binary
+*.rar binary
+*.tar binary
+*.gz binary
+*.tar.gz binary
+*.pdf binary
+*.exe binary
+*.dll binary
+*.so binary
+*.lib binary
+*.jar binary
+
+# Ignorar arquivos e pastas gerados por IDEs
+.idea/           export-ignore
+.vscode/         export-ignore
+.classpath       export-ignore
+.project         export-ignore
+*.iml            export-ignore
+*.ipr            export-ignore
+*.iws            export-ignore

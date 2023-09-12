@@ -1,0 +1,9 @@
+#!/bin/sh
+
+SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+BASE_DIR="$(cd "${SCRIPT_DIR}"/.. && pwd)"
+cd "$BASE_DIR" || die "ERRO: Could not go to directory '$BASE_DIR'"
+
+echo "Formatting code..."
+
+./gradlew spotlessApply

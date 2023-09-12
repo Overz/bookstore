@@ -1,0 +1,197 @@
+import com.diffplug.spotless.LineEnding
+
+buildscript {
+	repositories {
+		gradlePluginPortal()
+	}
+	buildscript {
+		dependencies {
+			classpath("com.dipien:semantic-version-gradle-plugin:2.0.0")
+		}
+	}
+}
+
+plugins {
+	id "java"
+	id "idea"
+	id "eclipse"
+	id "jacoco"
+	id "groovy"
+	id "application"
+	id "org.springframework.boot" version "3.1.0"
+	id "io.spring.dependency-management" version "1.1.0"
+	id "org.asciidoctor.jvm.convert" version "3.3.2"
+	id "com.diffplug.spotless" version "6.18.0"
+}
+
+version = "0.0.1"
+targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_17
+println("GROUP: ${group}, VERSION: ${version}, DESCRIPTION: ${description}")
+
+tasks.named("bootBuildImage") {
+	imageName = "${baseName}/${project.name}:${version}"
+}
+
+Boolean isDev = Boolean.parseBoolean(System.getenv("IS_DEV"))
+
+// IMPORT SCRIPTS
+apply plugin: "com.dipien.semantic-version"
+apply from: rootProject.file("gradle/templates.gradle")
+if (isDev) {
+	apply from: rootProject.file("gradle/development.gradle")
+}
+
+application {
+	springBoot {
+		buildInfo()
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set("snippetsDir", file("build/generated-snippets"))
+}
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-data-jpa",
+		"org.springframework.boot:spring-boot-starter-data-rest",
+		"org.springframework.boot:spring-boot-starter-mail",
+		"org.springframework.boot:spring-boot-starter-security",
+		"org.springframework.boot:spring-boot-starter-validation",
+//		"org.springdoc:springdoc-openapi-ui:1.6.15",
+//		"org.springdoc:springdoc-openapi-security:1.6.15",
+//		"org.springdoc:springdoc-openapi-javadoc:1.6.15",
+//		"org.springdoc:springdoc-openapi-starter-webmvn-ui:2.1.0",
+		// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+		"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0",
+		"org.apache.kafka:kafka-streams",
+		"org.flywaydb:flyway-core",
+		// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+		// https://springdoc.org/#Introduction
+		"org.springdoc:springdoc-openapi-ui:1.7.0",
+		// https://mvnrepository.com/artifact/com.auth0/java-jwt
+		"com.auth0:java-jwt:4.4.0",
+		"org.postgresql:postgresql:42.6.0",
+		"software.amazon.awssdk:kms:2.20.103",
+		"org.springframework.boot:spring-boot-starter-actuator"
+
+	compileOnly "org.projectlombok:lombok"
+
+	developmentOnly "org.springframework.boot:spring-boot-devtools"
+
+	runtimeOnly "io.micrometer:micrometer-registry-prometheus",
+		"org.postgresql:postgresql"
+
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor",
+		"org.projectlombok:lombok"
+
+	testImplementation "org.springframework.boot:spring-boot-starter-test",
+		"org.springframework.restdocs:spring-restdocs-mockmvc",
+		"org.springframework.security:spring-security-test",
+		// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+		"org.junit.jupiter:junit-jupiter-api:5.10.0-M1",
+		// https://mvnrepository.com/artifact/org.powermock/powermock-core
+		"org.powermock:powermock-core:2.0.9",
+		// https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
+		"org.powermock:powermock-api-mockito2:2.0.9",
+		// https://mvnrepository.com/artifact/org.hamcrest/hamcrest
+		"org.hamcrest:hamcrest:2.2",
+		// https://mvnrepository.com/artifact/org.apache.groovy/groovy-all
+		"org.apache.groovy:groovy-all:4.0.12"
+}
+
+test {
+	outputs.dir(snippetsDir)
+
+	useJUnitPlatform()
+
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+	afterSuite { desc, result ->
+		if (!desc.parent) {
+			println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+		}
+	}
+	afterTest { desc, result ->
+		logger.quiet "[${desc.className.tokenize('.').last()}]: [${desc.name}]: ${result.resultType}"
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.9"
+}
+
+jacocoTestReport {
+	dependsOn test
+
+	reports {
+		xml.enabled true
+		html.enabled true
+//		html.destination file("${buildDir}/jacocoHtml")
+	}
+	doFirst {
+		def file = file("$buildDir.absolutePath/reports/jacoco/jacocoTestReport.xml")
+		if (file.exists()) {
+			file.delete()
+		}
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = new BigDecimal(project.property("tests.coverage.ratio") as String)
+			}
+		}
+	}
+}
+
+spotless {
+	java {
+		target "src/**/*.java",
+			"src/**/*.yaml",
+			"src/**/*.json",
+			"src/**/*.html",
+			"src/**/*.css"
+
+		prettier(["prettier": "2.0.5", "prettier-plugin-java": "0.8.0"]).config([
+//			"tabWith"           : 2,
+"printWidth"        : 100,
+"singleQuote"       : true,
+"useTabs"           : true,
+"ignoreConfigFile"  : false,
+"ignoreEditorConfig": false
+		])
+		removeUnusedImports()
+		lineEndings(LineEnding.UNIX)
+		indentWithTabs(2)
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}
+
+idea {
+	module {
+		downloadJavadoc = true
+		downloadSources = true
+	}
+}
+
+eclipse {
+	classpath {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}

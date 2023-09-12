@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+# BASE_DIR="$(cd "${SCRIPT_DIR}"/../.. && pwd)"
+
+# . "$SCRIPT_DIR/lib.sh" || exit 1
+
+# # Verificar se os commits estão no formato "<type>(#number): <message>"
+# echo "Validando mensagem..."
+# COMMIT_REGEX='^(feat|bug|fix|chore|doc)\(#[0-9]{1,10}\):(\s)?(.*){200}$'
+# while read -r COMMIT; do
+# 	type=$(echo "${COMMIT}" | sed -E 's/'"${COMMIT_REGEX}"'/\1/')
+# 	scope=$(echo "${COMMIT}" | sed -E 's/'"${COMMIT_REGEX}"'/\2/')
+# 	subject=$(echo "${COMMIT}" | sed -E 's/'"${COMMIT_REGEX}"'/\3/')
+# 	echo "type: ${type}, scope: ${scope}, subject: ${subject}"
+
+# 	if ! echo "$COMMIT" | grep -iqE "$COMMIT_REGEX"; then
+# 		echo "${RED}ERROR${NC}: The commit message '${CYAN}${COMMIT}${NC}' doesn't follow the pattern - '${GREEN}<type>(#number): <message>'${NC}"
+# 		echo "	PATTERN: ${YELLOW}${COMMIT_REGEX}${NC}"
+# 		echo "	EXAMPLE: '${GREEN}feat(#123): my message${NC}'"
+# 		exit 1
+# 	fi
+# 	exit 1
+# done <"$(git rev-parse --git-dir)/../.git/COMMIT_EDITMSG"
+
+# # Rodar todos os testes da aplicação
+# echo "Rodando os testes..."
+# cd "$BASE_DIR" || die "ERRO: Could not go to directory '$BASE_DIR'"
+# ./gradlew test
+# exit_code=$?
+
+# if [ $exit_code -ne 0 ]; then
+# 	die "ERROR: Os testes da aplicação falharam. Corrija os problemas antes de confirmar o commit."
+# fi

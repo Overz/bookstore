@@ -1,8 +1,0 @@
-.*
-!.env
-*.yaml
-*.yml
-dockerfile*
-*.conf
-tmp
-/example
