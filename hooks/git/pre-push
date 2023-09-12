@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+# BASE_DIR="$(cd "${SCRIPT_DIR}"/../.. && pwd)"
+
+# . "$SCRIPT_DIR/lib.sh" || exit 1
+
+# # Formatar todo o código da aplicação utilizando o comando "gradlew spotlessApply"
+# cd "$BASE_DIR" || die "ERRO: Could not go to directory '$BASE_DIR'"
+# ./gradlew spotlessApply -Pfiles="$(git ls-files | grep -E '^[^/]+$ ')"
+# exit_code=$?
+
+# if [ $exit_code -ne 0 ]; then
+#   die "ERROR: A formatação do código falhou. Corrija os problemas antes de fazer o push."
+# fi

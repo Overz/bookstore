@@ -1,9 +1,0 @@
-FROM adminer:latest
-
-USER root
-
-RUN apk add --no-cache autoconf gcc g++ make libffi-dev openssl-dev \
-    && pecl install mongodb \
-    && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/docker-php-ext-mongodb.ini
-
-USER adminer
