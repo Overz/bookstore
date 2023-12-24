@@ -10,22 +10,30 @@ server:
     include-stacktrace: always
 
 spring:
-  application:
-    name: "bookstore-authentication-service"
-  info:
-    build:
-      version: "DEVELOPMENT"
-      description: "DEVELOPMENT"
   jpa:
     show-sql: true
   devtools:
     livereload:
       enabled: true
   flyway:
-    locations: "classpath:migrations/prod,classpath:migrations/dev"
+    locations: "classpath:migrations"
+
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    disable-swagger-default-url: true
+    urls:
+      - name: "@project.name@ - V1"
+        url: "/swagger-v1.yaml"
 
 logging:
-  logback:
-    rollingpolicy:
-      clean-history-on-start: true
+  file:
+    path: "./tmp/logs"
+    name: "${START_TIME}.log"
+  level:
+    com.bookstore: debug
+    org.springframework: debug
 ---

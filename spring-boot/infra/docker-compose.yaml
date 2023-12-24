@@ -1,32 +1,21 @@
 version: '3.9'
 
-services:
-#  auth:
-#    build:
-#      context: ../auth
-#      dockerfile: Dockerfile
-#    restart: always
-#    hostname: auth-srv
-#    env_file:
-#      - ./envs/.env.auth
-#    expose:
-#      - '3000'
-#    ports:
-#      - '3000:3000'
-#    volumes:
-#      - auth
-#    networks:
-#      app:
-
+volumes:
   postgres:
-    image: postgres:latest
+    name: 'bookstore-postgres'
+#  localstack:
+#    name: 'bookstore-mini-cloud'
+
+networks:
+  app:
+
+services:
+  postgres:
+    image: postgres:16.1
     restart: always
     hostname: postgres-srv
-    environment:
-      POSTGRES_MULTIPLE_DATABASES: bookstore:identity:postgres,bookstore:iam:postgres,bookstore:store:postgres
-      POSTGRES_HOST_AUTH_METHOD: trust
-    expose:
-      - '5432'
+    env_file:
+      - ./envs/.env.postgres
     ports:
       - '5432:5432'
     volumes:
@@ -43,18 +32,36 @@ services:
       ADMINER_DEFAULT_SERVER: postgres-srv
     ports:
       - '8080:8080'
-    expose:
-      - '8080'
     networks:
       app:
 
-volumes:
-  postgres:
-    name: 'bookstore-postgres'
-  auth:
-    name: 'bookstore-auth'
-  library:
-    name: 'bookstore-library'
+  pgamin:
+    image: dpage/pgadmin4:8.1
+    restart: always
+    hostname: pgadmin-srv
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    networks:
+      app:
 
-networks:
-  app:
+#  localstack:
+#    image: localstack/localstack:3.0.2
+#    hostname: localstack-srv
+#    restart: always
+#    environment:
+#      DEBUG: 1
+#      PERSISTENCE: 1
+#      LS_LOG: debug
+#      SERVICES: "s3,sqs,rds"
+#    volumes:
+#      - localstack:/var/lib/localstack
+#    ports:
+#      - "4566:4566"
+#      - "4510-4559:4510-4559"
+#    networks:
+#      app:

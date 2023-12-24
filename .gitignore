@@ -5,9 +5,11 @@ target
 dist
 tmp
 */.gradle/
-.env.local
+.env
 .gradle
+venv
 
+!gradle-wrapper.jar
 *.jar
 *.war
 *.zip

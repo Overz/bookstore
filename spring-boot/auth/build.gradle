@@ -55,6 +55,7 @@ configurations {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -63,27 +64,18 @@ ext {
 }
 
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-data-jpa",
+	implementation "com.bookstore:common:0.0.1",
+		"org.springframework.boot:spring-boot-starter-data-jpa",
 		"org.springframework.boot:spring-boot-starter-data-rest",
-		"org.springframework.boot:spring-boot-starter-mail",
 		"org.springframework.boot:spring-boot-starter-security",
 		"org.springframework.boot:spring-boot-starter-validation",
-//		"org.springdoc:springdoc-openapi-ui:1.6.15",
-//		"org.springdoc:springdoc-openapi-security:1.6.15",
-//		"org.springdoc:springdoc-openapi-javadoc:1.6.15",
-//		"org.springdoc:springdoc-openapi-starter-webmvn-ui:2.1.0",
-		// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+		"org.springframework.boot:spring-boot-starter-actuator",
 		"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0",
 		"org.apache.kafka:kafka-streams",
 		"org.flywaydb:flyway-core",
-		// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
-		// https://springdoc.org/#Introduction
-		"org.springdoc:springdoc-openapi-ui:1.7.0",
-		// https://mvnrepository.com/artifact/com.auth0/java-jwt
 		"com.auth0:java-jwt:4.4.0",
 		"org.postgresql:postgresql:42.6.0",
-		"software.amazon.awssdk:kms:2.20.103",
-		"org.springframework.boot:spring-boot-starter-actuator"
+		"software.amazon.awssdk:kms:2.20.103"
 
 	compileOnly "org.projectlombok:lombok"
 
@@ -98,15 +90,8 @@ dependencies {
 	testImplementation "org.springframework.boot:spring-boot-starter-test",
 		"org.springframework.restdocs:spring-restdocs-mockmvc",
 		"org.springframework.security:spring-security-test",
-		// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
 		"org.junit.jupiter:junit-jupiter-api:5.10.0-M1",
-		// https://mvnrepository.com/artifact/org.powermock/powermock-core
-		"org.powermock:powermock-core:2.0.9",
-		// https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
-		"org.powermock:powermock-api-mockito2:2.0.9",
-		// https://mvnrepository.com/artifact/org.hamcrest/hamcrest
 		"org.hamcrest:hamcrest:2.2",
-		// https://mvnrepository.com/artifact/org.apache.groovy/groovy-all
 		"org.apache.groovy:groovy-all:4.0.12"
 }
 
@@ -118,11 +103,13 @@ test {
 	testLogging {
 		events "passed", "skipped", "failed"
 	}
+
 	afterSuite { desc, result ->
 		if (!desc.parent) {
 			println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
 		}
 	}
+
 	afterTest { desc, result ->
 		logger.quiet "[${desc.className.tokenize('.').last()}]: [${desc.name}]: ${result.resultType}"
 	}
@@ -135,11 +122,6 @@ jacoco {
 jacocoTestReport {
 	dependsOn test
 
-	reports {
-		xml.enabled true
-		html.enabled true
-//		html.destination file("${buildDir}/jacocoHtml")
-	}
 	doFirst {
 		def file = file("$buildDir.absolutePath/reports/jacoco/jacocoTestReport.xml")
 		if (file.exists()) {
@@ -149,10 +131,11 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+	var ratio = project.property("tests.coverage.ratio") as String
 	violationRules {
 		rule {
 			limit {
-				minimum = new BigDecimal(project.property("tests.coverage.ratio") as String)
+				minimum = new BigDecimal(ratio)
 			}
 		}
 	}
@@ -160,19 +143,15 @@ jacocoTestCoverageVerification {
 
 spotless {
 	java {
-		target "src/**/*.java",
-			"src/**/*.yaml",
-			"src/**/*.json",
-			"src/**/*.html",
-			"src/**/*.css"
+		target "*.java", "*.yaml", "*.json"
 
 		prettier(["prettier": "2.0.5", "prettier-plugin-java": "0.8.0"]).config([
-//			"tabWith"           : 2,
-"printWidth"        : 100,
-"singleQuote"       : true,
-"useTabs"           : true,
-"ignoreConfigFile"  : false,
-"ignoreEditorConfig": false
+			"tabWith"           : 2,
+			"printWidth"        : 100,
+			"singleQuote"       : true,
+			"useTabs"           : true,
+			"ignoreConfigFile"  : false,
+			"ignoreEditorConfig": false
 		])
 		removeUnusedImports()
 		lineEndings(LineEnding.UNIX)
