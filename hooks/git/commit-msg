@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 BASE_DIR="$(cd "${SCRIPT_DIR}"/../.. && pwd)"
 
 COMMIT_EDITMSG_FILE="$BASE_DIR/$(git rev-parse --git-dir)/COMMIT_EDITMSG"
-END_CONTENT=$(grep -n "^#" $COMMIT_EDITMSG_FILE | cut -d ":" -f 1 | head -n 1 | tr -d '[:space:]')
+END_CONTENT=$(grep -n "^#" "$COMMIT_EDITMSG_FILE" | cut -d ":" -f 1 | head -n 1 | tr -d '[:space:]')
 
 LINE_LIMIT=70
 
@@ -27,7 +27,7 @@ echo "$header" | grep -qE "^$prefixos:\s.{1,$LINE_LIMIT}$" || \
 
 # body
 for ((i = 2; i < END_CONTENT; i++)); do
-	length=$(awk "NR==${i}" $COMMIT_EDITMSG_FILE | awk '{ print length }')
+	length=$(awk "NR==${i}" "$COMMIT_EDITMSG_FILE" | awk '{ print length }')
 	if [ "$length" -gt "$LINE_LIMIT" ]; then
 			exit_with_error "O conteúdo excedeu o limite de $LINE_LIMIT caracteres na linha $i contendo $length caracteres."
 	fi
