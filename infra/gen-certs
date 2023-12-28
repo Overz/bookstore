@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#openssl req -newkey rsa:4096 -nodes \
+#  -keyout keycloak.key.pem -x509 -days 3650 -out keycloak.crt.pem \
+#	-subj "/C=BR/ST=State/L=City/O=Organization/CN=bookstore.keycloak.com"
+
+openssl req -x509 -out "$1".crt -keyout "$1".key \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")

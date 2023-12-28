@@ -1,7 +1,10 @@
 #!/bin/sh
 
 podman-compose down
+
 podman volume rm \
-	bookstore-postgres \
+	bookstore-keycloak \
+	bookstore-postgresql \
 	--force
-podman-compose up
+
+podman-compose up "$@"
