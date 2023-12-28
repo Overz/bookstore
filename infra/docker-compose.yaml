@@ -21,6 +21,8 @@ services:
     image: nginx:1.25.3-alpine
     restart: always
     hostname: nginx-srv
+    env_file:
+      - ./nginx/.env.nginx
     volumes:
       - ./nginx/conf.d/:/etc/nginx/conf.d/
       - ./nginx/ssl/:/etc/nginx/ssl/
@@ -87,8 +89,7 @@ services:
       KEYCLOAK_ADMIN: "admin"
       KEYCLOAK_ADMIN_PASSWORD: "admin"
       KC_HTTP_RELATIVE_PATH: "/kc"
-      KC_HOSTNAME_URL: "https://keycloak-srv:8443"
-      KC_HOSTNAME_ADMIN_URL: "https://keycloak-srv:8443"
+      KC_HOSTNAME: "keycloak-srv"
       KC_PROXY: "edge"
       KC_LOG: "console"
       KC_LOG_CONSOLE_COLOR: "true"
@@ -96,5 +97,9 @@ services:
       - keycloak:/opt/keycloak
     command:
       - start
+      - --optimized
+    ports:
+      - "8080:8080"
+      - "8443:8443"
     networks:
       app:
