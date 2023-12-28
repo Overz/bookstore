@@ -97,6 +97,10 @@ com:
         expiration: 3600
       jwk:
         keys: "${ASYMMETRIC_KEY_PATH}"
+      endpoints:
+        - pattern: ""
+          roles:
+            - "ALL"
     messaging:
       topics:
         - batata:

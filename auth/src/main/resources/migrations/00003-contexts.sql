@@ -1,5 +1,5 @@
 -- Tabela context
-CREATE TABLE contexts
+CREATE TABLE iam.contexts
 (
 	cdContext      TEXT NOT NULL,
 	cdOrganization TEXT NOT NULL,
@@ -12,4 +12,4 @@ CREATE TABLE contexts
 		FOREIGN KEY (cdEntity) REFERENCES iam.users (cdUser)
 );
 
-COMMENT ON TABLE contexts IS 'Tabela que representa a abstração para troca de contextos ou associações no sistema.';
+COMMENT ON TABLE iam.contexts IS 'Tabela que representa a abstração para troca de contextos ou associações no sistema.';

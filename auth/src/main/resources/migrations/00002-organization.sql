@@ -4,7 +4,7 @@ CREATE TYPE iam.EnumOrganizationStatus AS ENUM (
 	);
 
 -- Tabela organization
-CREATE TABLE organizations
+CREATE TABLE iam.organizations
 (
 	cdOrganization TEXT                       NOT NULL,
 	cdOwner        TEXT                       NOT NULL,
@@ -18,4 +18,4 @@ CREATE TABLE organizations
 		FOREIGN KEY (cdOwner) REFERENCES iam.users (cdUser)
 );
 
-COMMENT ON TABLE organizations IS 'Tabela que armazena informações sobre organizações no sistema.';
+COMMENT ON TABLE iam.organizations IS 'Tabela que armazena informações sobre organizações no sistema.';

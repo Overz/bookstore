@@ -18,7 +18,7 @@ CREATE TABLE iam.user_session
 	dtLastLogin   TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
 
 	CONSTRAINT pk_usersession_cdusersession PRIMARY KEY (cdUserSession),
-	CONSTRAINT fk_usersession_cduser FOREIGN KEY (cdUser) REFERENCES iam."user" (cdUser)
+	CONSTRAINT fk_usersession_cduser FOREIGN KEY (cdUser) REFERENCES iam.users (cdUser)
 );
 
 COMMENT ON TABLE iam.user_session IS 'Sessions that user has logged';

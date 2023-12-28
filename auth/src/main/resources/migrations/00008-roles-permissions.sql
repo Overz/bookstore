@@ -1,5 +1,5 @@
 -- Tabela roles_permissions
-CREATE TABLE roles_permissions
+CREATE TABLE iam.roles_permissions
 (
 	cdRole       TEXT NOT NULL,
 	cdPermission TEXT NOT NULL,
@@ -13,4 +13,4 @@ CREATE TABLE roles_permissions
 		FOREIGN KEY (cdPermission) REFERENCES iam.permissions (cdPermission)
 );
 
-COMMENT ON TABLE roles_permissions IS 'Tabela que representa o relacionamento n:n entre grupos de permissões e permissões.';
+COMMENT ON TABLE iam.roles_permissions IS 'Tabela que representa o relacionamento n:n entre grupos de permissões e permissões.';
