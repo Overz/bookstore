@@ -3,6 +3,7 @@
 podman-compose down
 
 podman volume rm \
+	bookstore-nginx \
 	bookstore-keycloak \
 	bookstore-postgresql \
 	--force

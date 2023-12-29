@@ -1,10 +1,29 @@
 #!/bin/bash
 
-#openssl req -newkey rsa:4096 -nodes \
-#  -keyout keycloak.key.pem -x509 -days 3650 -out keycloak.crt.pem \
-#	-subj "/C=BR/ST=State/L=City/O=Organization/CN=bookstore.keycloak.com"
+CHAIN="$1.chain.pem"
+CRT="$1.crt"
+CRT_PEM="$CRT.pem"
+KEY="$1.key"
+KEY_PEM="$KEY.pem"
 
-openssl req -x509 -out "$1".crt -keyout "$1".key \
+openssl req -x509 -out "$CRT" -keyout "$KEY" \
   -newkey rsa:2048 -nodes -sha256 \
   -subj '/CN=localhost' -extensions EXT -config <( \
    printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+
+openssl x509 -in "$CRT" -out "$CRT_PEM" -outform PEM
+openssl rsa -in "$KEY" -out "$KEY_PEM" -outform PEM
+
+cat "$CRT_PEM" "$KEY_PEM" > "$CHAIN"
+
+echo "Arquivos criados:"
+echo "$CHAIN"
+echo "$CRT"
+echo "$CRT_PEM"
+echo "$KEY"
+echo "$KEY_PEM"
+
+chmod 755 "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM"
+
+mv "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM" ./ssl
+
