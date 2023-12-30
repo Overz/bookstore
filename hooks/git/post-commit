@@ -30,14 +30,11 @@ with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
 	match = re.search(r'version\((\d+\.\d+\.\d+)\)', header)
 	if match:
 		try:
-			branch = run_with_result(['git', 'branch', '--show-current'])
 			version = match.group(1)
 			print(f"Criando tag com versão {version}")
 
 			result = run_with_result(['git', 'tag', version])
 			print(result.stdout.strip())
-
-			result = run_with_result(['git', 'push', '--tags'])
-			print(result.stdout.strip())
+			print("\n\nTags pendêntes para push")
 		except CalledProcessError as e:
 			exit_with_error(f"Erro realizando o commit e criando a tag: {e}")
