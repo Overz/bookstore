@@ -20,6 +20,7 @@ def exit_with_error(msg: str):
 	print(msg)
 	sys.exit(1)
 
+
 # Leitura do arquivo COMMIT_EDIMSG
 with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
 	content = commit_file.read()
@@ -30,11 +31,11 @@ with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
 	if not re.match(HEADER_PATTERN, header):
 		exit_with_error("""
 			Erro: A primeira linha não segue o padrão de prefixo.
-				  feat: novas funcionalidades.
-				  bug: correções de bugs.
-				  chore: pequenos ajustes.
-				  doc: documentações.
-				  version: nova versão para arvore do git.
+					feat: novas funcionalidades.
+					bug: correções de bugs.
+					chore: pequenos ajustes.
+					doc: documentações.
+					version: nova versão para arvore do git.
 		""")
 
 	if len(header) > LINE_LIMIT:

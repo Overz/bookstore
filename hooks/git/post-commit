@@ -9,6 +9,7 @@ SCRIPT_DIR = path.realpath(path.join(path.dirname(__file__)))
 BASE_DIR = path.realpath(path.join(SCRIPT_DIR, '..', '..'))
 COMMIT_EDITMSG_FILE = path.join(BASE_DIR, '.git', 'COMMIT_EDITMSG')
 
+
 def exit_with_error(msg: str):
 	"""
 	realiza o exist(1) com uma mensagem de erro
@@ -16,11 +17,13 @@ def exit_with_error(msg: str):
 	print(msg)
 	sys.exit(1)
 
+
 def run_with_result(args: list[str]) -> CompletedProcess[str]:
 	"""
 	executa comandos no sistema com checagem de erro e retorno
 	"""
 	return run(args, check=True, capture_output=True, text=True)
+
 
 with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
 	content = commit_file.read()
