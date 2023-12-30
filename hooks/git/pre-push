@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+from subprocess import run, CalledProcessError, CompletedProcess
+
+def run_with_result(args: list[str]) -> CompletedProcess[str]:
+	"""
+	executa comandos no sistema com checagem de erro e retorno
+	"""
+	return run(args, check=True, capture_output=True, text=True)
+
+try:
+	result = run_with_result(['git', 'push', '--tags'])
+	print(result.stdout.strip())
+except CalledProcessError as e:
+	print(f"Erro realizando o commit e criando a tag: {e}")

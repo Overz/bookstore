@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from subprocess import run
 from os import path
 import sys
 import re
@@ -14,11 +13,9 @@ END_CONTENT = "#"
 HEADER_PATTERN = r'^(feat|bug|chore|doc|version\(\d+\.\d+\.\d+\)):'
 
 
-def exit_with_error(msg):
-	"""realiza o exist(1) com uma mensagem de erro
-
-	Args:
-			msg (str): mensagem de erro
+def exit_with_error(msg: str):
+	"""
+	realiza o exist(1) com uma mensagem de erro
 	"""
 	print(msg)
 	sys.exit(1)
@@ -30,7 +27,6 @@ with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
 	lines = content.split('\n')
 	header = lines[0]
 
-	# Validação da primeira linha (header)
 	if not re.match(HEADER_PATTERN, header):
 		exit_with_error("""
 			Erro: A primeira linha não segue o padrão de prefixo.
@@ -44,18 +40,11 @@ with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
 	if len(header) > LINE_LIMIT:
 		exit_with_error(f"Erro: O header excede o limite de {LINE_LIMIT} caracteres.")
 
-	# Validação do restante do arquivo
 	for i, line in enumerate(lines[1:], start=2):
 		if not line.startswith(END_CONTENT) and len(line) > LINE_LIMIT:
 			exit_with_error(f"Erro: Linha {i} excede o limite de {LINE_LIMIT} caracteres.")
 
-	# Caso o prefixo seja "version", realiza git tag e commit
 	if header.startswith('version'):
 		match = re.search(r'version\((\d+\.\d+\.\d+)\)', header)
 		if not match:
 			exit_with_error("Erro: não foi possível extrair a versão do header.")
-
-		version = match.group(1)
-		print(f"Criando tag com versão {version}")
-		run(['git', 'tag', version], check=True)
-		run(['git', 'commit', '-m', content], check=True)
