@@ -1,0 +1,21 @@
+[MASTER]
+ignore = *.txt,*.md,*.json,*.xml,*.java,*.class,*.gradle,*.js,*.jsx,*.ts,*.tsx
+
+[FORMAT]
+indent-string = "\t"
+
+[BASIC]
+indentation-width = 2
+
+[DESIGN]
+min-public-methods = 0
+max-args = 10
+max-attributes = 7
+
+[TYPECHECK]
+generated-members =
+    objects,
+    MyType.__annotations__
+
+[VARIABLES]
+dummy-variables-rgx = _|dummy

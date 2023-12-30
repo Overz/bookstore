@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+from subprocess import run, CalledProcessError, CompletedProcess
+from os import path
+import sys
+import re
+
+SCRIPT_DIR = path.realpath(path.join(path.dirname(__file__)))
+BASE_DIR = path.realpath(path.join(SCRIPT_DIR, '..', '..'))
+COMMIT_EDITMSG_FILE = path.join(BASE_DIR, '.git', 'COMMIT_EDITMSG')
+
+def exit_with_error(msg: str):
+	"""
+	realiza o exist(1) com uma mensagem de erro
+	"""
+	print(msg)
+	sys.exit(1)
+
+def run_with_result(args: list[str]) -> CompletedProcess[str]:
+	"""
+	executa comandos no sistema com checagem de erro e retorno
+	"""
+	return run(args, check=True, capture_output=True, text=True)
+
+with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
+	content = commit_file.read()
+
+	header = content.split('\n')[0]
+
+	match = re.search(r'version\((\d+\.\d+\.\d+)\)', header)
+	if match:
+		try:
+			version = match.group(1)
+			print(f"Criando tag com versão {version}")
+
+			result = run_with_result(['git', 'tag', version])
+			print(result.stdout.strip())
+			print("\n\nTags pendêntes para push")
+		except CalledProcessError as e:
+			exit_with_error(f"Erro realizando o commit e criando a tag: {e}")
