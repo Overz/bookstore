@@ -4,9 +4,14 @@ build
 target
 dist
 tmp
+node_modules
 */.gradle/
-.env.local
+!gradle-wrapper.jar
+.env
 .gradle
+venv
+*lock*
+bin
 
 *.jar
 *.war
@@ -16,3 +21,25 @@ tmp
 *.iml
 *.ipr
 *.iws
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
