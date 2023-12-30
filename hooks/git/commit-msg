@@ -1,34 +1,61 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
-BASE_DIR="$(cd "${SCRIPT_DIR}"/../.. && pwd)"
+from subprocess import run
+from os import path
+import sys
+import re
 
-COMMIT_EDITMSG_FILE="$BASE_DIR/$(git rev-parse --git-dir)/COMMIT_EDITMSG"
-END_CONTENT=$(grep -n "^#" "$COMMIT_EDITMSG_FILE" | cut -d ":" -f 1 | head -n 1 | tr -d '[:space:]')
+SCRIPT_DIR = path.realpath(path.join(path.dirname(__file__)))
+BASE_DIR = path.realpath(path.join(SCRIPT_DIR, '..', '..'))
+COMMIT_EDITMSG_FILE = path.join(BASE_DIR, '.git', 'COMMIT_EDITMSG')
 
-LINE_LIMIT=70
+LINE_LIMIT = 70
+END_CONTENT = "#"
+HEADER_PATTERN = r'^(feat|bug|chore|doc|version\(\d+\.\d+\.\d+\)):'
 
-exit_with_error() {
-  echo "Erro: $1"
-  exit 1
-}
 
-# header
-header=$(sed -n '1p' "$COMMIT_EDITMSG_FILE")
+def exit_with_error(msg):
+	"""realiza o exist(1) com uma mensagem de erro
 
-[ -n "$header" ] || exit_with_error "O cabeçalho do commit é obrigatório."
+	Args:
+			msg (str): mensagem de erro
+	"""
+	print(msg)
+	sys.exit(1)
 
-prefixos="feat|bug|fix|chore|doc"
-echo "$header" | grep -qE "(^$prefixos$):" || \
-	exit_with_error "O cabeçalho do commit deve começar com uma das seguintes tags: $prefixos."
+# Leitura do arquivo COMMIT_EDIMSG
+with open(COMMIT_EDITMSG_FILE, mode='r', encoding='UTF-8') as commit_file:
+	content = commit_file.read()
 
-echo "$header" | grep -qE "^$prefixos:\s.{1,$LINE_LIMIT}$" || \
-	exit_with_error "O cabeçalho do commit deve ter o padrão 'prefixo: mensagem' e ter no máximo $LINE_LIMIT caracteres após os dois pontos."
+	lines = content.split('\n')
+	header = lines[0]
 
-# body
-for ((i = 2; i < END_CONTENT; i++)); do
-	length=$(awk "NR==${i}" "$COMMIT_EDITMSG_FILE" | awk '{ print length }')
-	if [ "$length" -gt "$LINE_LIMIT" ]; then
-			exit_with_error "O conteúdo excedeu o limite de $LINE_LIMIT caracteres na linha $i contendo $length caracteres."
-	fi
-done
+	# Validação da primeira linha (header)
+	if not re.match(HEADER_PATTERN, header):
+		exit_with_error("""
+			Erro: A primeira linha não segue o padrão de prefixo.
+				  feat: novas funcionalidades.
+				  bug: correções de bugs.
+				  chore: pequenos ajustes.
+				  doc: documentações.
+				  version: nova versão para arvore do git.
+		""")
+
+	if len(header) > LINE_LIMIT:
+		exit_with_error(f"Erro: O header excede o limite de {LINE_LIMIT} caracteres.")
+
+	# Validação do restante do arquivo
+	for i, line in enumerate(lines[1:], start=2):
+		if not line.startswith(END_CONTENT) and len(line) > LINE_LIMIT:
+			exit_with_error(f"Erro: Linha {i} excede o limite de {LINE_LIMIT} caracteres.")
+
+	# Caso o prefixo seja "version", realiza git tag e commit
+	if header.startswith('version'):
+		match = re.search(r'version\((\d+\.\d+\.\d+)\)', header)
+		if not match:
+			exit_with_error("Erro: não foi possível extrair a versão do header.")
+
+		version = match.group(1)
+		print(f"Criando tag com versão {version}")
+		run(['git', 'tag', version], check=True)
+		run(['git', 'commit', '-m', content], check=True)

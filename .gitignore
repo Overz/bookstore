@@ -11,6 +11,7 @@ node_modules
 .gradle
 venv
 *lock*
+bin
 
 *.jar
 *.war

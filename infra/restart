@@ -1,11 +1,11 @@
 #!/bin/sh
 
-podman-compose down
+podman-compose down --remove-orphans
 
 podman volume rm \
 	bookstore-nginx \
 	bookstore-keycloak \
-	bookstore-postgresql \
+	bookstore-postgres \
 	--force
 
 podman-compose up "$@"
