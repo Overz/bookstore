@@ -6,6 +6,8 @@ podman volume rm \
 	bookstore-nginx \
 	bookstore-keycloak \
 	bookstore-postgres \
+	bookstore-storage \
+	bookstore-mongo \
 	--force
 
-podman-compose up "$@"
+podman-compose up --build "$@"

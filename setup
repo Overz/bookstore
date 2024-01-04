@@ -8,3 +8,5 @@ git config pull.ff only
 # GIT HOOKS PATH
 git config core.hooksPath "$GIT_HOOKS"
 echo "Git hooks: $GIT_HOOKS"
+
+sudo sysctl net.ipv4.ip_unprivileged_port_start=80

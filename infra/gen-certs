@@ -23,7 +23,4 @@ echo "$CRT_PEM"
 echo "$KEY"
 echo "$KEY_PEM"
 
-chmod 755 "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM"
-
-mv "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM" ./ssl
-
+chmod "${2:-755}" "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM"
