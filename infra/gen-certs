@@ -1,15 +1,17 @@
 #!/bin/bash
 
-CHAIN="$1.chain.pem"
-CRT="$1.crt"
+FULL_NAME="${1:-server}"
+NAME=$(echo "$FULL_NAME" | tr '.' ' ' | awk '{print $1}')
+
+CHAIN="$NAME.chain.pem"
+CRT="$NAME.crt"
 CRT_PEM="$CRT.pem"
-KEY="$1.key"
+KEY="$NAME.key"
 KEY_PEM="$KEY.pem"
 
 openssl req -x509 -out "$CRT" -keyout "$KEY" \
   -newkey rsa:2048 -nodes -sha256 \
-  -subj '/CN=localhost' -extensions EXT -config <( \
-   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+  -subj "/C=/ST=/L=/O=/CN=localhost"
 
 openssl x509 -in "$CRT" -out "$CRT_PEM" -outform PEM
 openssl rsa -in "$KEY" -out "$KEY_PEM" -outform PEM
@@ -23,4 +25,4 @@ echo "$CRT_PEM"
 echo "$KEY"
 echo "$KEY_PEM"
 
-chmod "${2:-755}" "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM"
+chmod "${2:-777}" "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM"

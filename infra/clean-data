@@ -1,0 +1,13 @@
+#!/bin/bash
+
+VOLUMES=(
+	"bookstore-postgres"
+	"bookstore-pgadmin"
+	"bookstore-keycloak"
+	"bookstore-nginx"
+	"bookstore-minio"
+	"bookstore-mongo"
+)
+
+docker-compose down --remove-orphans
+docker volume rm "${VOLUMES[@]}" --force
