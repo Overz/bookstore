@@ -1,17 +1,17 @@
-FROM openjdk:17-alpine
+FROM golang:1.21-alpine AS builder
 
-ENV WORKDIR='app'
-ENV PORT='3000'
-ENV APP='{{APP_NAME}}-{{APP_VERSION}}.jar'
-ENV TZ='America/Sao_Paulo'
+RUN apk add --update --no-cache make poppler-utils
 
-USER root
+WORKDIR /app
 
-RUN unlink /etc/localtime && ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
+ADD . .
 
-WORKDIR ${WORKDIR}
+RUN go mod downloads && make
 
-ADD ./build .
+FROM alpine:3.9.6
 
-EXPOSE ${PORT}
+WORKDIR /app
 
+COPY --from=builder /app/bookstore .
+
+CMD [ "/app/bookstore" ]
