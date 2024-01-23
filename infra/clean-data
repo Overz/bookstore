@@ -1,13 +1,21 @@
 #!/bin/bash
 
 VOLUMES=(
-	"bookstore-postgres"
-	"bookstore-pgadmin"
-	"bookstore-keycloak"
 	"bookstore-nginx"
+	"bookstore-adminer"
+	"bookstore-pgadmin"
+	"bookstore-postgres"
+	"bookstore-keycloak"
 	"bookstore-minio"
 	"bookstore-mongo"
+	"bookstore-zookeeper"
+	"bookstore-kafka"
 )
 
 docker-compose down --remove-orphans
-docker volume rm "${VOLUMES[@]}" --force
+
+if [ "$1" != "" ]; then
+	docker volume rm "bookstore-${1}" --force
+else
+	docker volume rm "${VOLUMES[@]}" --force
+fi
