@@ -9,9 +9,11 @@ node_modules
 !gradle-wrapper.jar
 .env
 .gradle
-venv
+*venv*
 *lock*
 bin
+__pycache__
+.local
 
 *.jar
 *.war

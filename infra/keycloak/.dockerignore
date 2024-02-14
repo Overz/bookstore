@@ -1,3 +1,6 @@
 Dockerfile
 *.md
 .*
+*.ts
+setup
+docs
