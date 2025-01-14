@@ -1,13 +1,52 @@
-# BOOK STORE
+# BOOKSTORE
 
 Compiled of code
 
+---
+
 ## Setup
 
-Git setup: [Setup](setup)
+- Main: [Setup](setup)
+
+---
 
 ## Branchs
 
-- [java](https://github.com/Overz/book-store/tree/java)
-- [golang](https://github.com/Overz/book-store/tree/golang)
-- [node](https://github.com/Overz/book-store/tree/node)
+- [master](https://github.com/Overz/book-store/tree/master)
+- [develop](https://github.com/Overz/book-store/tree/develop)
+
+---
+
+## Auth service
+
+---
+
+## Flags service
+
+---
+
+## Gateway service
+
+---
+
+## Lib service
+
+---
+
+## Mail service
+
+---
+
+## Manager service
+
+---
+
+## Report service
+
+---
+
+## Web
+
+[//]: # (
+Framekwors/Libs: <https://kinsta.com/blog/javascript-libraries/>
+)

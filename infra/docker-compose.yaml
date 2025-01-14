@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 volumes:
   postgres:
@@ -9,6 +9,14 @@ volumes:
     name: bookstore-keycloak
   nginx:
     name: bookstore-nginx
+  minio:
+    name: bookstore-minio
+  mongo:
+    name: bookstore-mongo
+  zookeeper:
+    name: bookstore-zookeeper
+  kafka:
+    name: bookstore-kafka
 
 networks:
   app:
@@ -16,80 +24,220 @@ networks:
 
 services:
   nginx:
-    image: nginx:1.25.3-alpine
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     restart: always
     hostname: nginx-srv
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '128Mb'
     env_file:
       - ./nginx/.env.nginx
     volumes:
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-      - ./ssl/:/etc/nginx/ssl/
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - nginx:/etc/nginx
     depends_on:
       - keycloak
       - postgres
       - adminer
+      # - pgadmin
+      - minio
     ports:
-      - "443:443"
+      - '443:443'
     networks:
       app:
 
   postgres:
-    image: postgres:16.1
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
     restart: always
     hostname: postgres-srv
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1536Mb'
     env_file:
       - ./postgres/.env.postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./postgres/:/docker-entrypoint-initdb.d/
     networks:
       app:
 
   adminer:
-    image: adminer:latest
+    build:
+      context: ./adminer
+      dockerfile: Dockerfile
     restart: always
     hostname: adminer-srv
-    environment:
-      ADMINER_DEFAULT_SERVER: postgres-srv
-    command:
-      - "php"
-      - "-S"
-      - "[::]:9999"
-      - "-t"
-      - "/var/www/html"
+    deploy:
+      resources:
+        limits:
+          memory: '128Mb'
+          cpus: '0.05'
+    env_file:
+      - ./adminer/.env.adminer
     networks:
       app:
 
-  pgamin:
-    image: dpage/pgadmin4:8.1
-    restart: always
-    hostname: pgadmin-srv
-    env_file:
-      - ./pgadmin/.env.pgadmin
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    depends_on:
-      - postgres
-    networks:
-      app:
+  # pgadmin:
+  #   image: dpage/pgadmin4:8.1
+  #   restart: always
+  #   hostname: pgadmin-srv
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: '384Mb'
+  #         cpus: '0.1'
+  #   env_file:
+  #     - ./pgadmin/.env.pgadmin
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin
+  #   networks:
+  #     app:
 
   keycloak:
-    image: keycloak/keycloak:23.0.3
+    build:
+      context: ./keycloak
+      dockerfile: Dockerfile
     restart: always
     hostname: keycloak-srv
+    deploy:
+      resources:
+        limits:
+          memory: '768Mb'
+          cpus: '0.5'
     depends_on:
-      postgres:
-        condition: service_completed_successfully
+      - postgres
     env_file:
       - ./keycloak/.env.keycloak
     volumes:
       - keycloak:/opt/keycloak
-      - ./ssl/:/etc/x509/https/
-      - ./keycloak/realms.json:/opt/keycloak/data/import/realms.json
-    command:
-      - start
+#    ports:
+#      - '8080:8080'
+#      - '8443:8443'
     networks:
       app:
+
+  mongo:
+    image: mongo:7.0.4
+    restart: always
+    hostname: mongo-srv
+    deploy:
+      resources:
+        limits:
+          memory: '512Mb'
+          cpus: '0.5'
+    env_file:
+      - ./mongo/.env.mongo
+    volumes:
+      - mongo:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      app:
+
+  minio:
+    build:
+      context: ./minio
+      dockerfile: Dockerfile
+    restart: always
+    hostname: minio-srv
+    deploy:
+      resources:
+        limits:
+          cpus: '0.7'
+          memory: '512Mb'
+    env_file:
+      - ./minio/.env.minio
+    volumes:
+      - minio:/minio/data
+    ports:
+      - '6000:6000'
+      - '6001:6001'
+    networks:
+      app:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    hostname: zookeeper-srv
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: '384Mb'
+    env_file:
+      - ./kafka/.env.zookeeper
+    volumes:
+      - zookeeper:/var/lib/zookeeper
+    networks:
+      app:
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    hostname: kafka-srv
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '512Mb'
+    depends_on:
+      zookeeper:
+        condition: service_completed_successfully
+    env_file:
+      - ./kafka/.env.kafka
+    volumes:
+      - kafka:/var/lib/zookeeper
+    ports:
+      - '9092:9092'
+    networks:
+      app:
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:4.0.1
+    hostname: kafdrop-srv
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '512Mb'
+    depends_on:
+      - kafka
+    env_file:
+      - ./kafka/.env.kafdrop
+    ports:
+      - '19000:9000'
+    networks:
+      app:
+#  prometheus:
+#    image: prom/prometheus:v2.47.0
+#    restart: always
+#    hostname: prometheus-srv
+#    env_file:
+#      - ./prometheus/.env.prometheus
+#    volumes:
+#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - prometheus:/prometheus
+#    networks:
+#      app:
+#
+#  grafana:
+#    image: grafana/grafana:10.2.3
+#    restart: always
+#    hostname: grafana-srv
+#    depends_on:
+#      - prometheus
+#    env_file:
+#      - ./grafana/.env.grafana
+#    volumes:
+#      - grafana:/var/lib/grafana
+#    networks:
+#      app:

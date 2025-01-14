@@ -1,11 +1,4 @@
 #!/bin/sh
 
-podman-compose down --remove-orphans
-
-podman volume rm \
-	bookstore-nginx \
-	bookstore-keycloak \
-	bookstore-postgres \
-	--force
-
-podman-compose up "$@"
+docker-compose down --remove-orphans
+docker-compose up "$@"
