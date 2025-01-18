@@ -5,24 +5,19 @@ NAME=$(echo "$FULL_NAME" | tr '.' ' ' | awk '{print $1}')
 
 CHAIN="$NAME.chain.pem"
 CRT="$NAME.crt"
-CRT_PEM="$CRT.pem"
 KEY="$NAME.key"
-KEY_PEM="$KEY.pem"
 
 openssl req -x509 -out "$CRT" -keyout "$KEY" \
   -newkey rsa:2048 -nodes -sha256 \
   -subj "/C=/ST=/L=/O=/CN=localhost"
 
-openssl x509 -in "$CRT" -out "$CRT_PEM" -outform PEM
-openssl rsa -in "$KEY" -out "$KEY_PEM" -outform PEM
+openssl req -x509 -newkey rsa:4096 -keyout ${KEY} -out ${CRT} -days 365000 -nodes -subj "/CN=localhost"
 
-cat "$CRT_PEM" "$KEY_PEM" > "$CHAIN"
+cat "$CRT" "$KEY" > "$CHAIN"
 
 echo "Arquivos criados:"
 echo "$CHAIN"
 echo "$CRT"
-echo "$CRT_PEM"
 echo "$KEY"
-echo "$KEY_PEM"
 
-chmod "${2:-777}" "$CHAIN" "$CRT" "$CRT_PEM" "$KEY" "$KEY_PEM"
+chmod "${2:-777}" "$CHAIN" "$CRT" "$KEY"

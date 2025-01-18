@@ -4,7 +4,8 @@
 
 ## Using
 
-- Access with: `http://localhost[:port]/[context-path/]admin/[realm]/console`
+- Configure the `hosts` file in your machine to the `KC_HOSTNAME` value used in [.env.keycloak](.env.keycloak) or [dockerfile](Dockerfile)
+- Access with: `http://localhost[:port]/[context-path/]admin/[realm]/console` or `https://localhost/kc` if the docker-compose is running
 - [Which OAuth flow should i use?](https://auth0.com/docs/get-started/authentication-and-authorization-flow/which-oauth-2-0-flow-should-i-use)
 - [Configure different flows](https://www.thomasvitale.com/keycloak-authentication-flow-sso-client/)
 
@@ -19,10 +20,10 @@ We can change environments variables [here](.env.keycloak)
 To avoid problems of manually creating realms every time when we drop the data,
 keycloak has an automatic import tool, however, the import tool has some problems.
 
-In order to avoid these import problems, an [api](setup/api) was made in `python`
+In order to avoid these import problems, an [api](func/src) was made in `python`
 to facilitate management of the realms.
 
-Realms need to have some data removed before being sent for creation by [api](setup/api), these are:
+Realms need to have some data removed before being sent for creation by [api](func/src), these are:
 
 ```json
 {
@@ -79,3 +80,10 @@ Realms need to have some data removed before being sent for creation by [api](se
 	}
 }
 ```
+
+---
+
+## Email
+
+https://www.hostinger.com.br/tutoriais/aprenda-a-utilizar-o-smtp-google
+

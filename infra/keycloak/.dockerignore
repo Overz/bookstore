@@ -2,5 +2,5 @@ Dockerfile
 *.md
 .*
 *.ts
-setup
+func
 docs

@@ -1,4 +1,4 @@
-FROM postgres:16.1
+FROM postgres:17.2
 
 # RUN openssl req -new -nodes -text -out root.csr \
       # -keyout root.key -subj "/CN=${HOSTNAME}" \

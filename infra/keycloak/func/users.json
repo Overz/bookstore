@@ -1,0 +1,54 @@
+{
+	"users": [
+		{
+			"id": "24c44a9f-d048-445d-97b7-37009c242529",
+			"username": "admin",
+			"enabled": true,
+			"totp": false,
+			"emailVerified": true,
+			"firstName": "admin",
+			"email": "",
+			"disableableCredentialTypes": [],
+			"requiredActions": [],
+			"notBefore": 0,
+			"access": {
+				"manageGroupMembership": true,
+				"view": true,
+				"mapRoles": true,
+				"impersonate": true,
+				"manage": true
+			},
+			"credentials": [
+				{
+					"type": "password",
+					"value": "123456789"
+				}
+			]
+		},
+		{
+			"id": "d67f5b31-7b7c-4232-9f19-3dc7d021fb16",
+			"username": "admin@bookstore.com",
+			"enabled": true,
+			"totp": false,
+			"emailVerified": true,
+			"firstName": "Book Saga",
+			"email": "admin@bookstore.com",
+			"disableableCredentialTypes": [],
+			"requiredActions": [],
+			"notBefore": 0,
+			"access": {
+				"manageGroupMembership": true,
+				"view": true,
+				"mapRoles": true,
+				"impersonate": true,
+				"manage": true
+			},
+			"credentials": [
+				{
+					"type": "password",
+					"value": "123456789"
+				}
+			]
+		}
+	]
+}

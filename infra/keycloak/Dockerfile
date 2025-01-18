@@ -1,14 +1,23 @@
-FROM keycloak/keycloak:23.0.5 AS builder
+ARG KC_VERSION="26.1.0"
+
+FROM keycloak/keycloak:${KC_VERSION} AS builder
 
 WORKDIR /opt/keycloak
 
-RUN /opt/keycloak/bin/kc.sh build
+COPY . .
 
-FROM keycloak/keycloak:23.0.5 AS final
+RUN /opt/keycloak/bin/kc.sh build \
+    --db=postgres \
+    --transaction-xa-enabled=true \
+    --http-relative-path=/kc \
+    --health-enabled=true \
+    --metrics-enabled=true
+
+FROM keycloak/keycloak:${KC_VERSION} AS final
 
 WORKDIR /opt/keycloak
 
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
-ADD --chown=keycloak:keycloak . .
+COPY --chown=keycloak:keycloak . .
 
-CMD [ "start", "--import-realm" ]
+CMD [ "start", "--optimized", "--import-realm" ]

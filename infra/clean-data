@@ -19,3 +19,7 @@ if [ "$1" != "" ]; then
 else
 	docker volume rm "${VOLUMES[@]}" --force
 fi
+
+docker container rm $(docker container ls -a) --force
+docker network rm "bookstore-network" --force
+docker system prune --force
