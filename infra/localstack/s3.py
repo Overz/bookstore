@@ -1,4 +1,4 @@
-import boto3
+8080import boto3
 
 # Configurar o cliente do S3 com o endpoint do LocalStack
 s3 = boto3.client('s3', endpoint_url='http://localhost:4566')

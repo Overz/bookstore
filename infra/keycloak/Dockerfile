@@ -1,5 +1,12 @@
 ARG KC_VERSION="26.1.0"
 
+FROM redhat/ubi9:9.5 AS setup
+
+# Instalar o curl e outros pacotes necessários
+RUN dnf install --installroot /mnt/rootfs curl --releasever 9 --setopt install_weak_deps=false --nodocs -y && \
+    dnf --installroot /mnt/rootfs clean all && \
+    rpm --root /mnt/rootfs -e --nodeps setup
+
 FROM keycloak/keycloak:${KC_VERSION} AS builder
 
 WORKDIR /opt/keycloak
@@ -17,6 +24,7 @@ FROM keycloak/keycloak:${KC_VERSION} AS final
 
 WORKDIR /opt/keycloak
 
+COPY --from=setup /mnt/rootfs /
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 COPY --chown=keycloak:keycloak . .
 

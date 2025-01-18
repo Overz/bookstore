@@ -114,10 +114,17 @@ services:
           memory: '768Mb'
           cpus: '0.5'
     healthcheck:
-      test: curl --head -fsS http://localhost:9000/health/ready
+      test: [
+        "CMD",
+        "curl",
+        "--head",
+        "-fsS",
+        "http://localhost:9000/kc/health/ready"
+      ]
       interval: 10s
-      start_interval: 45s
+      retries: 3
       timeout: 5s
+      start_period: 15s
     depends_on:
       - postgres
     env_file:
