@@ -1,19 +1,13 @@
 # BOOKSTORE
 
-Compiled of code
+In progress...
 
 ---
 
 ## Setup
 
-- Main: [Setup](setup)
-
 ---
 
-## Branchs
-
-- [master](https://github.com/Overz/book-store/tree/master)
-- [develop](https://github.com/Overz/book-store/tree/develop)
 
 ---
 
